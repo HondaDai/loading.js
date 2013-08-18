@@ -14,6 +14,7 @@
   };
 
   var overlay = null;
+  var update = $.noop;
 
   $.loading = {
 
@@ -40,22 +41,23 @@
       overlay.css(overlay_style);
       overlay.find(".spinner").css(spinner_style).append( $(options.spinner.spin().el) );
       
-      var update = function(){
+      that = this;
+      update = function(){
 
         var position = { top: 0, left: 0};
         try {
           position = $root.position();
         } catch (e) {}
 
-        overlay.css({
-          "top": position.top + $root.scrollTop(),
-          "left": position.left + $root.scrollLeft(),
-          "width": $root.width(),
-          "height": $root.height()
-        });
+        if (that.isShowing()) {
+          overlay.css({
+            "top": position.top + $root.scrollTop(),
+            "left": position.left + $root.scrollLeft(),
+            "width": $root.width(),
+            "height": $root.height()
+          });
+        }
 
-
-        console.log("update");
       };
 
       $(window).on("resize", update).trigger("resize");
@@ -66,9 +68,6 @@
       overlay.fadeIn(options.fadeIn, function(){
         options.callback();
       });
-
-      console.log(overlay);
-      window.o = overlay;
 
       return this;
     },
