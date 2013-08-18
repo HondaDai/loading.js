@@ -46,7 +46,7 @@
 
         var position = { top: 0, left: 0};
         try {
-          position = $root.position();
+          position = $root.offset();
         } catch (e) {}
 
         if (that.isShowing()) {
