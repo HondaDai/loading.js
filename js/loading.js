@@ -41,23 +41,22 @@
       overlay.css(overlay_style);
       overlay.find(".spinner").css(spinner_style).append( $(options.spinner.spin().el) );
       
-      that = this;
+      var that = this;
       update = function(){
 
         var position = { top: 0, left: 0};
         try {
-          position = $root.offset();
+          position = $root.offset() || $root.position();
         } catch (e) {}
 
         if (that.isShowing()) {
           overlay.css({
             "top": position.top + $root.scrollTop(),
             "left": position.left + $root.scrollLeft(),
-            "width": $root.width(),
-            "height": $root.height()
+            "width": $root.outerWidth(),
+            "height": $root.outerHeight()
           });
         }
-
       };
 
       $(window).on("resize", update).trigger("resize");
@@ -65,9 +64,10 @@
       
       $("body").append(overlay);
 
-      overlay.fadeIn(options.fadeIn, function(){
+      overlay.fadeIn(options.fadeIn);
+      setTimeout(function(){
         options.callback();
-      });
+      }, options.fadeIn);
 
       return this;
     },
@@ -81,12 +81,16 @@
       if (!this.isShowing()) 
         return this;
 
-      overlay.fadeOut(options.fadeOut, function(){
+      overlay.fadeOut(options.fadeOut);
+      setTimeout(function(){
+
+        $(window).off("resize", update)
+        overlay.off("scroll", update);
         overlay.remove();
         overlay = null;
         options.callback();
-      });
-      
+
+      }, options.fadeOut);
 
       return this;
     }
